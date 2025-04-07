@@ -1,12 +1,12 @@
-//adi.gamzu@msmail.ariel.ac.il
+//adi.gamzu@msmail.ariel.ac.il 
 
 
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include "doctest.hpp"
 
 #include "data_structures.hpp" // Stack, Queue, PriorityQueue, UnionFind
-#include "graph.hpp"           // Graph class
-#include "algorithms.hpp"      // BFS, DFS, Dijkstra, Prim, Kruskal
+#include "Graph.hpp"           // Graph class
+#include "Algorithms.hpp"      // BFS, DFS, Dijkstra, Prim, Kruskal
 #include <stdexcept>         // לזריקת חריגות
 #include <climits>           // לשימוש בINT_MAX (אם קיים)
 #include <iostream>          // במידה ונרצה debug prints
