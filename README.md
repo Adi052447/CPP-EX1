@@ -33,10 +33,10 @@
 .
 ├── data_structures.hpp        # כותרות למבני הנתונים
 ├── data_structures.cpp        # מימוש מבני הנתונים
-├── graph.hpp                  # כותרות למחלקת הגרף
-├── graph.cpp                  # מימוש הגרף
-├── algorithms.hpp             # כותרות לאלגוריתמים על גרפים
-├── algorithms.cpp             # מימוש האלגוריתמים
+├── Graph.hpp                  # כותרות למחלקת הגרף
+├── Graph.cpp                  # מימוש הגרף
+├── Algorithms.hpp             # כותרות לאלגוריתמים על גרפים
+├── Algorithms.cpp             # מימוש האלגוריתמים
 ├── main.cpp                   # תוכנית הרצה (דוגמה)
 ├── test.cpp                   # בדיקות יחידה (doctest)
 ├── doctest.hpp                # ספריית doctest (header-only)
@@ -91,8 +91,8 @@ make clean     # ניקיון
 ## הסבר קצר על הקוד
 
 1. **data\_structures** – מכיל את Stack, Queue, PriorityQueue, UnionFind.
-2. **graph** – מחלקת Graph עם פעולות להוספה/הסרה/קשת מכוונת/הדפסה.
-3. **algorithms** – אלגוריתמים על הגרף (BFS, DFS, Dijkstra, Prim, Kruskal).
+2. **Graph** – מחלקת Graph עם פעולות להוספה/הסרה/קשת מכוונת/הדפסה.
+3. **Algorithms** – אלגוריתמים על הגרף (BFS, DFS, Dijkstra, Prim, Kruskal).
 4. **main.cpp** – דוגמה של בניית גרף והרצת האלגוריתמים.
 5. **test.cpp** – בדיקות יחידה (doctest) למבני הנתונים והאלגוריתמים.
 
