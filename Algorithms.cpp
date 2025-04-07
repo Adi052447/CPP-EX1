@@ -1,6 +1,6 @@
 //adi.gamzu@msmail.ariel.ac.il
 
-#include "algorithms.hpp"
+#include "Algorithms.hpp"
 #include <climits>    // לשימוש ב-INT_MAX במקום 2147483647 במידת הצורך
 #include <stdexcept>  // לזריקת חריגות
 #include <iostream>   // במידה ונרצה להדפיס
