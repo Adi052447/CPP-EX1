@@ -1,219 +1,244 @@
-//adi.gamzu@msmail.ariel.ac.il
-
+//adi.gamzu@msmail.ariel.ac.il 
 
 #include "data_structures.hpp"
-#include <stdexcept> // לצורך שימוש בחריגות
+#include <stdexcept> // לשימוש בחריגות std::overflow_error, std::underflow_error
+#include <iostream>  // לשימוש בהדפסות בתור העדיפויות (PriorityQueue)
 
 namespace graph {
 
-    // ============================
-    //         STACK
-    // ============================
-    Stack::Stack(int capacity) 
-        : capacity(capacity), top(-1), size(0)
-    {
-        this->data = new int[capacity];
+//
+//  UNION-FIND SECTION (קודם)
+//
+UnionFind::UnionFind(int elementsCount) : size(elementsCount) {
+    // מקצים מערכים parent ו-rank לכל האיברים
+    parent = new int[size];
+    rank   = new int[size];
+    for (int i = 0; i < size; i++) {
+        parent[i] = i;
+        rank[i] = 0;
+    }
+}
+
+UnionFind::~UnionFind() {
+    delete[] parent;
+    delete[] rank;
+}
+
+int UnionFind::find(int node) {
+    // מימוש Path Compression
+    if (parent[node] != node) {
+        parent[node] = find(parent[node]);
+    }
+    return parent[node];
+}
+
+void UnionFind::unite(int u, int v) {
+    // מוצאים את הנציגים של u ו-v
+    int rootU = find(u);
+    int rootV = find(v);
+
+    if (rootU == rootV) {
+        // כבר באותה קבוצה, אין צורך לאחד
+        return;
     }
 
-    Stack::~Stack() {
-        delete[] data;
+    // Union by rank
+    if (rank[rootU] < rank[rootV]) {
+        parent[rootU] = rootV;
+    } else if (rank[rootU] > rank[rootV]) {
+        parent[rootV] = rootU;
+    } else {
+        parent[rootV] = rootU;
+        rank[rootU]++;
     }
+}
 
-    void Stack::push(int vertex) {
-        if (this->top >= this->capacity - 1) {
-            throw std::overflow_error("Stack is full");
-        }
-        this->data[++top] = vertex;
-        size++;
+void UnionFind::reset() {
+    // מאתחל את כל האיברים כך שכל אינדקס הוא ההורה של עצמו
+    for (int i = 0; i < size; i++) {
+        parent[i] = i;
+        rank[i] = 0;
     }
+}
 
-    int Stack::pop() {
-        if (top != -1) {
-            size--;
-            return this->data[top--];
-        } else {
-            throw std::underflow_error("Stack is empty");
-        }
+//
+//  STACK SECTION
+//
+Stack::Stack(int maxCapacity)
+    : capacity(maxCapacity), top(-1), size(0)
+{
+    // מקצה מערך שלם (int) לפי הקיבולת
+    data = new int[capacity];
+}
+
+Stack::~Stack() {
+    delete[] data;
+}
+
+void Stack::push(int value) {
+    // אם אין מקום נוסף, נזרוק חריגה
+    if (top >= capacity - 1) {
+        throw std::overflow_error("Stack is full");
     }
+    // מעלים את top ומציבים את האיבר
+    data[++top] = value;
+    size++;
+}
 
-    bool Stack::isEmpty() {
-        return (this->size == 0);
+int Stack::pop() {
+    if (top == -1) {
+        throw std::underflow_error("Stack is empty");
     }
+    size--;
+    return data[top--];
+}
 
-    int Stack::peek() {
-        if (top != -1) {
-            return this->data[top];
-        } else {
-            throw std::underflow_error("Stack is empty"); 
-        }
+bool Stack::isEmpty() {
+    // המחסנית ריקה אם size==0
+    return (size == 0);
+}
+
+int Stack::peek() {
+    if (top == -1) {
+        throw std::underflow_error("Stack is empty");
     }
+    return data[top];
+}
 
-    // ============================
-    //         QUEUE
-    // ============================
-    Queue::Queue(int capacity) 
-        : capacity(capacity), front(0), rear(0), size(0)
-    {
-        this->data = new int[capacity];
+//
+//  QUEUE SECTION
+//
+Queue::Queue(int maxCap)
+    : capacity(maxCap), front(0), rear(0), size(0)
+{
+    // מקצה מערך לשמירת איברי התור
+    data = new int[capacity];
+}
+
+Queue::~Queue() {
+    delete[] data;
+}
+
+bool Queue::enqueue(int value) {
+    // בודקים אם התור מלא
+    if (size >= capacity) {
+        throw std::overflow_error("Queue is full");
     }
+    data[rear] = value;
+    rear = (rear + 1) % capacity;
+    size++;
+    return true;
+}
 
-    Queue::~Queue() {
-        delete[] data;
+int Queue::dequeue() {
+    // אם אין איברים, נזרוק underflow
+    if (isEmpty()) {
+        throw std::underflow_error("Queue is empty");
     }
+    int result = data[front];
+    front = (front + 1) % capacity;
+    size--;
+    return result;
+}
 
-    bool Queue::enqueue(int vertex) {
-        if (size < capacity) {
-            this->data[rear] = vertex;
-            this->rear = (this->rear + 1) % this->capacity;
-            this->size++;
-            return true;
-        } else {
-            throw std::overflow_error("Queue is full");
-        }
+bool Queue::isEmpty() {
+    return (size == 0);
+}
+
+//
+//  PRIORITY QUEUE SECTION
+//
+PriorityQueue::PriorityQueue(int maxCap)
+    : capacity(maxCap), size(0)
+{
+    heap = new HeapNode[capacity];
+}
+
+PriorityQueue::~PriorityQueue() {
+    delete[] heap;
+}
+
+void PriorityQueue::insert(int vertex, int priority) {
+    // אם אין מקום, רק נדפיס - במימוש הנוכחי לא נזרקת חריגה
+    if (size == capacity) {
+        std::cout << "Priority Queue is full." << std::endl;
+        return;
     }
+    // מכניסים את הצומת והעדיפות בסוף
+    heap[size] = { vertex, priority };
+    heapifyUp(size);
+    size++;
+}
 
-    int Queue::dequeue() {
-        if (isEmpty()) {
-            throw std::underflow_error("Queue is empty");
-        }
-        int firstVer = this->data[front];
-        this->front = (this->front + 1) % this->capacity;
-        this->size--;
-        return firstVer;
+int PriorityQueue::extractMin() {
+    // אם ריק, נדפיס ונחזיר ערך שמייצג \"אין\" (למשל INT_MAX)
+    if (isEmpty()) {
+        std::cout << "Priority Queue is empty." << std::endl;
+        return 2147483647;
     }
+    // לוקחים את 'המינימום' (ראש הערמה)
+    int minVertex = heap[0].vertex;
+    // מעבירים את האחרון לראש ומקטינים size
+    heap[0] = heap[size - 1];
+    size--;
+    // משחזרים את תכונות הערימה
+    heapifyDown(0);
+    return minVertex;
+}
 
-    bool Queue::isEmpty() {
-        return (this->size == 0);
-    }
-
-    // ============================
-    //     PRIORITY QUEUE
-    // ============================
-    PriorityQueue::PriorityQueue(int capacity)
-        : capacity(capacity), size(0)
-    {
-        this->heap = new HeapNode[capacity];
-    }
-
-    PriorityQueue::~PriorityQueue() {
-        delete[] heap;
-    }
-
-    void PriorityQueue::insert(int vertex, int priority) {
-        if (size == capacity) {
-            std::cout << "Priority Queue is full." << std::endl;
-            return;
-        }
-        heap[size] = {vertex, priority};
-        heapifyUp(size);
-        size++;
-    }
-
-    int PriorityQueue::extractMin() {
-        if (isEmpty()) {
-            std::cout << "Priority Queue is empty." << std::endl;
-            return 2147483647; // INT_MAX
-        }
-        int minVertex = heap[0].vertex;
-        heap[0] = heap[size - 1];
-        size--;
-        heapifyDown(0);
-        return minVertex;
-    }
-
-    void PriorityQueue::decreaseKey(int vertex, int newPriority) {
-        for (int i = 0; i < size; i++) {
-            if (heap[i].vertex == vertex) {
-                if (newPriority < heap[i].priority) {
-                    heap[i].priority = newPriority;
-                    heapifyUp(i);
-                }
-                break;
+void PriorityQueue::decreaseKey(int vertex, int newPriority) {
+    // מחפשים את ה-vertex המבוקש
+    for (int i = 0; i < size; i++) {
+        if (heap[i].vertex == vertex) {
+            // אם מצאנו, ונקבעה עדיפות חדשה יותר טובה (נמוכה),
+            // נעדכן ונבצע heapifyUp על המיקום.
+            if (newPriority < heap[i].priority) {
+                heap[i].priority = newPriority;
+                heapifyUp(i);
             }
+            break;
         }
     }
+}
 
-    bool PriorityQueue::isEmpty() {
-        return (size == 0);
-    }
+bool PriorityQueue::isEmpty() {
+    return (size == 0);
+}
 
-    void PriorityQueue::heapifyUp(int index) {
-        while (index > 0) {
-            int parent = (index - 1) / 2;
-            if (heap[parent].priority <= heap[index].priority) {
-                break;
-            }
-            std::swap(heap[parent], heap[index]);
-            index = parent;
+// פונקציית עזר לעלייה כלפי מעלה בערימה
+void PriorityQueue::heapifyUp(int index) {
+    while (index > 0) {
+        int parentIndex = (index - 1) / 2;
+        // אם העדיפות של האב כבר קטנה/שווה, נעצור
+        if (heap[parentIndex].priority <= heap[index].priority) {
+            break;
         }
+        // אחרת נחליף את האיבר הנוכחי עם האב
+        std::swap(heap[parentIndex], heap[index]);
+        index = parentIndex;
     }
+}
 
-    void PriorityQueue::heapifyDown(int index) {
-        while (2 * index + 1 < size) {
-            int left = 2 * index + 1;
-            int right = 2 * index + 2;
-            int smallest = index;
+// פונקציית עזר לירידה כלפי מטה בערימה
+void PriorityQueue::heapifyDown(int index) {
+    // כל עוד יש בן שמאלי
+    while ((2 * index + 1) < size) {
+        int left  = 2 * index + 1;
+        int right = 2 * index + 2;
+        int smallest = index;
 
-            if (left < size && heap[left].priority < heap[smallest].priority) {
-                smallest = left;
-            }
-            if (right < size && heap[right].priority < heap[smallest].priority) {
-                smallest = right;
-            }
-            if (smallest == index) {
-                break;
-            }
-            std::swap(heap[index], heap[smallest]);
-            index = smallest;
+        if ((left < size) && (heap[left].priority < heap[smallest].priority)) {
+            smallest = left;
         }
-    }
-
-    // ============================
-    //         UNION-FIND
-    // ============================
-    UnionFind::UnionFind(int size) : size(size) {
-        parent = new int[size];
-        rank = new int[size];
-        for (int i = 0; i < size; ++i) {
-            parent[i] = i;
-            rank[i] = 0;
+        if ((right < size) && (heap[right].priority < heap[smallest].priority)) {
+            smallest = right;
         }
-    }
-
-    UnionFind::~UnionFind() {
-        delete[] parent;
-        delete[] rank;
-    }
-
-    int UnionFind::find(int node) {
-        if (parent[node] != node) {
-            parent[node] = find(parent[node]);
+        if (smallest == index) {
+            break;
         }
-        return parent[node];
+        std::swap(heap[index], heap[smallest]);
+        index = smallest;
     }
-
-    void UnionFind::unite(int u, int v) {
-        int uRoot = find(u);
-        int vRoot = find(v);
-
-        if (uRoot == vRoot)
-            return;
-
-        if (rank[uRoot] < rank[vRoot]) {
-            parent[uRoot] = vRoot;
-        } else if (rank[uRoot] > rank[vRoot]) {
-            parent[vRoot] = uRoot;
-        } else {
-            parent[vRoot] = uRoot;
-            rank[uRoot]++;
-        }
-    }
-
-    void UnionFind::reset() {
-        for (int i = 0; i < size; ++i) {
-            parent[i] = i;
-            rank[i] = 0;
-        }
-    }
+}
 
 } // namespace graph
