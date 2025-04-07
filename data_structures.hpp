@@ -1,4 +1,5 @@
-//adi.gamzu@msmail.ariel.ac.il
+//adi.gamzu@msmail.ariel.ac.il 
+
 #ifndef DATA_STRUCTURES_H
 #define DATA_STRUCTURES_H
 
