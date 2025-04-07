@@ -1,9 +1,9 @@
-//adi.gamzu@msmail.ariel.ac.il
+//adi.gamzu@msmail.ariel.ac.il 
 
 
 #include <iostream>
-#include "graph.hpp"       // כולל את המחלקה Graph
-#include "algorithms.hpp"  // כולל את האלגוריתמים BFS, DFS, וכו'
+#include "Graph.hpp"       // כולל את המחלקה Graph
+#include "Algorithms.hpp"  // כולל את האלגוריתמים BFS, DFS, וכו'
 
 using namespace graph;
 
