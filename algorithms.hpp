@@ -1,9 +1,10 @@
-//adi.gamzu@msmail.ariel.ac.il
+//adi.gamzu@msmail.ariel.ac.il 
+
 
 #ifndef ALGORITHMS_HPP
 #define ALGORITHMS_HPP
 
-#include "graph.hpp"           // נדרש עבור המחלקה Graph ו-Node
+#include "Graph.hpp"           // נדרש עבור המחלקה Graph ו-Node
 #include "data_structures.hpp" // נדרש עבור Queue, Stack, PriorityQueue, UnionFind
 
 #include <stdexcept> // זריקת חריגות
