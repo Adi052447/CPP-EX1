@@ -1,6 +1,6 @@
-//adi.gamzu@msmail.ariel.ac.il
+//adi.gamzu@msmail.ariel.ac.il 
 
-#include "graph.hpp"
+#include "Graph.hpp"
 
 namespace graph {
 
